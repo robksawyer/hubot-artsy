@@ -75,12 +75,23 @@ module.exports = (robot) ->
           
           result = JSON.parse(body)
           if result
-            art_title = result._embedded.artworks[0].title
-            art_image = result._embedded.artworks[0]._links.thumbnail.href
-            permalink = result._embedded.artworks[0]._links.permalink.href
-            if art_title and art_image
-              msg.send art_title + " [" + permalink + "]\n" + art_image
-              return
+            
+            if result._embedded 
+                artwork = result._embedded.artworks[0]
+                if artwork
+
+                  if artwork.title
+                    message += artwork.title + "\n"
+
+                  links = artwork._links
+                  if links.thumbnail.href
+                    message += links.thumbnail.href + "\n"
+
+                  if links.permalink.href
+                    message += links.permalink.href
+
+                  msg.send message
+                  return
 
   #
   # Return details about a random artist
