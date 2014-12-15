@@ -71,7 +71,7 @@ module.exports = (robot) ->
             art_image = result._embedded.artworks[0]._links.thumbnail.href
             permalink = result._embedded.artworks[0]._links.permalink.href
             if art_title and art_image
-              msg.send art_title + "\n" + art_image + "\n" + permalink
+              msg.send art_title + " [" + permalink + "]\n" + art_image
               return
           
           msg.send "The gallery is closed at the moment."
