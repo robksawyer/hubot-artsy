@@ -20,12 +20,13 @@
 
 request = require('superagent')
 traverson = require('traverson')
-clientID = process.env.HUBOT_ARTSY_CLIENT_ID or "b9d8f8725b92b790afd0"
-clientSecret = process.env.HUBOT_ARTSY_CLIENT_SECRET or "25caa38a1bdc3cc7c663e213003cc3a1"
+clientID = process.env.HUBOT_ARTSY_CLIENT_ID
+clientSecret = process.env.HUBOT_ARTSY_CLIENT_SECRET
 api = traverson.jsonHal.from('https://api.artsy.net/api')
 apiUrl = 'https://api.artsy.net/api/tokens/xapp_token'
 artworksUrl = 'https://api.artsy.net/api/artworks'
 artistUrl = 'https://api.artsy.net/api/artists'
+searchUrl = 'https://api.artsy.net/api/search'
 xappToken = undefined
 
 #For random number generation
@@ -48,6 +49,48 @@ module.exports = (robot) ->
         unless xappToken?
           msg.send "Had an issue connecting to Artsy."
         cb xappToken
+
+  #
+  # Return a piece of artwork based on a query
+  #
+  robot.respond /art ( me)? (.*)$/i, (msg) ->
+    #find the query
+    if msg.match[2]
+
+      getToken msg, (xappToken) ->
+        #Get a piece of art
+        robot.http(searchUrl)
+          .header('X-Xapp-Token', xappToken)
+          .header('Accept', 'application/vnd.artsy-v2+json')
+          .query(
+            q: msg.match[2].trim()
+            size: 1
+          )
+          .get() (err, res, body) ->
+            unless body?
+              msg.send "The gallery is closed at the moment."
+              return 
+            
+            result = JSON.parse(body)
+            if result
+              message = ""
+              if result._embedded 
+                  artwork = result._embedded.results[0]
+                  if artwork
+                    if artwork.type === "Artwork"
+
+                      if artwork.title
+                        message += artwork.title + "\n"
+
+                      links = artwork._links
+                      if links.thumbnail.href
+                        message += links.thumbnail.href + "\n"
+
+                      if links.permalink.href
+                        message += links.permalink.href
+
+                      msg.send message
+                      return
 
   #
   # Return a random piece of artwork
