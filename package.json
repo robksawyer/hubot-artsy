@@ -19,8 +19,6 @@
   },
   "dependencies": {
     "coffee-script": "~1.6",
-    "contextify": "^0.1.9",
-    "mmmagic": "^0.3.12",
     "superagent": "^0.21.0",
     "traverson": "^0.15.0"
   },
