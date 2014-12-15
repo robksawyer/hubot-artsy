@@ -37,3 +37,10 @@ hubot> Melvin Culaba
        http://artsy.net/artist/melvin-culaba
 
 ```
+
+```
+user1> hubot art me dragon
+hubot> Raphael, Saint George and the Dragon (ca. 1506)
+       https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTI9X6Q5Nvb7BTt7VtmLODHXh2s4ADXMozulZ7DmdA1gb3jYifkRLUmRJw
+       https://artsy.net/artwork/raphael-saint-george-and-the-dragon
+```
