@@ -75,7 +75,7 @@ module.exports = (robot) ->
           
           result = JSON.parse(body)
           if result
-            
+            message = ""
             if result._embedded 
                 artwork = result._embedded.artworks[0]
                 if artwork
