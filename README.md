@@ -1,8 +1,10 @@
-# hubot-artsy
+![ArtsyBot](http://s8.postimg.org/jev6cfcmt/artsy_bot.jpg)
 
 Robots like art.
 
 See [`src/artsy.coffee`](src/artsy.coffee) for full documentation.
+
+![node.io stats](https://nodei.co/npm/hubot-artsy.png?downloads=true&downloadRank=true&stars=true)
 
 ## Installation
 
