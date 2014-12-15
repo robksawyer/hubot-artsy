@@ -18,11 +18,12 @@
 
 request = require('superagent')
 traverson = require('traverson')
-clientID = process.env.HUBOT_ARTSY_CLIENT_ID
-clientSecret = process.env.HUBOT_ARTSY_CLIENT_SECRET
+clientID = process.env.HUBOT_ARTSY_CLIENT_ID or "b9d8f8725b92b790afd0"
+clientSecret = process.env.HUBOT_ARTSY_CLIENT_SECRET or "25caa38a1bdc3cc7c663e213003cc3a1"
 api = traverson.jsonHal.from('https://api.artsy.net/api')
 apiUrl = 'https://api.artsy.net/api/tokens/xapp_token'
 artworksUrl = 'https://api.artsy.net/api/artworks'
+artistUrl = 'https://api.artsy.net/api/artists'
 xappToken = undefined
 
 #For random number generation
@@ -31,7 +32,9 @@ high = 23987
 
 module.exports = (robot) ->
   
-  #Get a token from Artsy
+  #
+  # Get a token from Artsy
+  #
   getToken = (msg, cb) ->
     #Get a token
     request
@@ -44,7 +47,10 @@ module.exports = (robot) ->
           msg.send "Had an issue connecting to Artsy."
         cb xappToken
 
-  robot.respond /(get)? art/i, (msg) ->
+  #
+  # Return a random piece of artwork
+  #
+  robot.respond /(get)? art$/i, (msg) ->
     #create a random offset
     offset = Math.round(Math.floor(Math.random() * (high - low + 1)) + low)
     getToken msg, (xappToken) ->
@@ -73,10 +79,60 @@ module.exports = (robot) ->
             if art_title and art_image
               msg.send art_title + " [" + permalink + "]\n" + art_image
               return
-          
-          msg.send "The gallery is closed at the moment."
 
-  #Make this smarter. Right now it only looks for artists with only first and last name.
+  #
+  # Return details about a random artist
+  #
+  robot.respond /(get)? artist$/i, (msg) ->
+    #create a random offset
+    offset = Math.round(Math.floor(Math.random() * (high - low + 1)) + low)
+    getToken msg, (xappToken) ->
+      #Get a piece of art
+      robot.http(artistUrl)
+        .header('X-Xapp-Token', xappToken)
+        .header('Accept', 'application/vnd.artsy-v2+json')
+        .query(
+          offset: offset,
+          size: 1
+        )
+        .get() (err, res, body) ->
+          if err
+            msg.send "Had an issue connecting to Artsy."
+            return
+
+          unless body?
+            msg.send "The gallery is closed at the moment."
+            return 
+          
+          result = JSON.parse(body)
+          if result
+            message = ""
+
+            if result._embedded 
+              artist = result._embedded.artists[0]
+              if artist
+
+                if artist.name
+                  message += artist.name + "\n"
+
+                if artist.blurb
+                  message += artist.blurb + "\n"
+
+                links = artist._links
+                if links.thumbnail.href
+                  message += links.thumbnail.href + "\n"
+
+                if links.permalink.href
+                  message += links.permalink.href
+
+                msg.send message
+                return
+        
+
+  #
+  # Returns the details about an artist that is mentioned.
+  # TODO: Make this smarter. Right now it only looks for artists with only first and last name.
+  #
   robot.hear /artist (\w+\s\w+)/i, (msg) ->
     unless msg.match[1]?
       return
@@ -99,8 +155,21 @@ module.exports = (robot) ->
           if err
             msg.send "Had an issue connecting to Artsy."
             return
+
+          message = ""
           if artist
-            art_image = artist._links.thumbnail.href
-            permalink = artist._links.permalink.href
-            message = artist.name + "\n" + artist.blurb + "\n" + art_image + "\n" + permalink
+
+            if artist.name
+              message += artist.name + "\n"
+
+            if artist.blurb
+              message += artist.blurb + "\n"
+
+            if artist._links.thumbnail
+              message += artist._links.thumbnail.href + "\n"
+
+            if artist._links.permalink
+              message += artist._links.permalink.href
+
             msg.reply message
+            return
