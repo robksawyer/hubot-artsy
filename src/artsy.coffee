@@ -65,7 +65,7 @@ module.exports = (robot) ->
           .header('Accept', 'application/vnd.artsy-v2+json')
           .query(
             q: msg.match[1].trim(),
-            size: 1
+            size: 50
           )
           .get() (err, res, body) ->
             unless body?
@@ -76,7 +76,13 @@ module.exports = (robot) ->
             if result
               message = ""
               if result._embedded 
-                  artwork = result._embedded.results[0]
+
+                  #Search the results for Artwork
+                  for i in [0..result._embedded.results.length] by 1
+                    if result._embedded.results[i] == "Artwork"
+                      artwork = result._embedded.results[i]
+                      break
+
                   if artwork
                     if artwork.type == "Artwork"
 
