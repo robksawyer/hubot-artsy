@@ -57,6 +57,7 @@ module.exports = (robot) ->
   robot.respond /art me (.*)/i, (msg) ->
     #find the query
     if msg.match[1]
+      console.log "Searching artsy for " + msg.match[1]
 
       getToken msg, (xappToken) ->
         #Get a piece of art
@@ -64,10 +65,12 @@ module.exports = (robot) ->
           .header('X-Xapp-Token', xappToken)
           .header('Accept', 'application/vnd.artsy-v2+json')
           .query(
-            q: msg.match[1].trim(),
-            size: 50
+            q: msg.match[1].trim()
           )
           .get() (err, res, body) ->
+            if err
+              msg.send "An art fart occured."
+
             unless body?
               msg.send "The gallery is closed at the moment."
               return 
@@ -79,13 +82,14 @@ module.exports = (robot) ->
 
                   #Search the results for Artwork
                   for i in [0..result._embedded.results.length] by 1
+                    console.log result._embedded.results[i].type
                     if result._embedded.results[i].type == "Artwork"
                       artwork = result._embedded.results[i]
                       break
 
                   if artwork
                     if artwork.type == "Artwork"
-
+                      console.log artwork.title
                       if artwork.title
                         message += artwork.title + "\n"
 
@@ -98,6 +102,8 @@ module.exports = (robot) ->
 
                       msg.send message
                       return
+
+            msg.send "I didn't find any art like that."
 
   #
   # Return a random piece of artwork
