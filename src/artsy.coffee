@@ -63,7 +63,7 @@ module.exports = (robot) ->
           .header('X-Xapp-Token', xappToken)
           .header('Accept', 'application/vnd.artsy-v2+json')
           .query(
-            q: msg.match[2].trim()
+            q: msg.match[2].trim(),
             size: 1
           )
           .get() (err, res, body) ->
