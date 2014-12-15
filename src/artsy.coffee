@@ -10,6 +10,7 @@
 # Commands:
 #   hubot get art - Returns a random image from artsy.net.
 #   hubot get artist - Returns a random artist.
+#   hubot art me <query> - Search for piece of art.
 #   artists <some artist> - Returns the details about an artist including an image.
 #   
 # Notes:
@@ -53,7 +54,7 @@ module.exports = (robot) ->
   #
   # Return a piece of artwork based on a query
   # 
-  robot.respond /art( me)? (.*)/i, (msg) ->
+  robot.respond /art me (.*)/i, (msg) ->
     #find the query
     if msg.match[2]
 
@@ -95,7 +96,7 @@ module.exports = (robot) ->
   #
   # Return a random piece of artwork
   #
-  robot.respond /(get)? art$/i, (msg) ->
+  robot.respond /(get) art$/i, (msg) ->
     #create a random offset
     offset = Math.round(Math.floor(Math.random() * (high - low + 1)) + low)
     getToken msg, (xappToken) ->
