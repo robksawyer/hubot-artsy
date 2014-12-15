@@ -82,10 +82,16 @@ module.exports = (robot) ->
 
                   #Search the results for Artwork
                   for i in [0..result._embedded.results.length] by 1
-                    console.log result._embedded.results[i].type
-                    if result._embedded.results[i].type == "Artwork"
-                      artwork = result._embedded.results[i]
-                      break
+                    if typeof result._embedded.results[i] != "undefined"
+                      if typeof result._embedded.results[i].type != "undefined"
+                        console.log result._embedded.results[i].type
+                        if result._embedded.results[i].type == "Artwork"
+                          artwork = result._embedded.results[i]
+                          break
+
+                        if result._embedded.results[i].type == "Artist"
+                          unless artist?
+                            artist = result._embedded.results[i]
 
                   if artwork
                     if artwork.type == "Artwork"
@@ -102,8 +108,24 @@ module.exports = (robot) ->
 
                       msg.send message
                       return
+                  else if artist
+                    if artist.name
+                      message += artist.name + "\n"
 
-            msg.send "I didn't find any art like that."
+                    if artist.blurb
+                      message += artist.blurb + "\n"
+
+                    links = artist._links
+                    if links.thumbnail.href
+                      message += links.thumbnail.href + "\n"
+
+                    if links.permalink.href
+                      message += links.permalink.href
+
+                    msg.send message
+                    return
+
+            msg.send "I wasnt't able to find any art or an artist matching your query. But, I'm going to paint one right now. Be back later."
 
   #
   # Return a random piece of artwork
