@@ -144,7 +144,7 @@ module.exports = (robot) ->
         )
         .get() (err, res, body) ->
           if err
-            msg.send "Had an issue connecting to Artsy."
+            msg.send "Achoo."
             return
 
           unless body?
@@ -188,7 +188,7 @@ module.exports = (robot) ->
         )
         .get() (err, res, body) ->
           if err
-            msg.send "Had an issue connecting to Artsy."
+            msg.send "Burp. Pardon me."
             return
 
           unless body?
@@ -224,43 +224,97 @@ module.exports = (robot) ->
   # Returns the details about an artist that is mentioned.
   # TODO: Make this smarter. Right now it only looks for artists with only first and last name.
   #
-  robot.hear /artist (\w+\s\w+)/i, (msg) ->
+  robot.hear /.*?artist (\w+)\s?(\w+)?/i, (msg) ->
     unless msg.match[1]?
       return
 
+    # Whether or not we've tried searching the full name
+    tried_full = false 
+    #Get artist details
+    artist_fn = msg.match[1].toLowerCase()
+    
+    if msg.match[2]
+      artist_ln = msg.match[2].toLowerCase()
+    
+    artist_id = ""
+
     getToken msg, (xappToken) ->
-      #Get artist details
-      artist_name = msg.match[1].replace(/\s+/g, '-').toLowerCase()
+
+      if artist_fn and artist_ln
+        tried_full = true
+        artist_id = artist_fn + "-" + artist_ln
+      else if artist_fn
+        artist_id = artist_fn
+
       api.newRequest()
-        .follow('artist')
-        .withRequestOptions({
-          headers: {
-            'X-Xapp-Token': xappToken,
-            'Accept': 'application/vnd.artsy-v2+json'
-          }
-        })
-        .withTemplateParameters({ 
-          id: artist_name 
-        })
-        .getResource (err, artist) ->
-          if err
-            msg.send "Had an issue connecting to Artsy."
-            return
+          .follow('artist')
+          .withRequestOptions({
+            headers: {
+              'X-Xapp-Token': xappToken,
+              'Accept': 'application/vnd.artsy-v2+json'
+            }
+          })
+          .withTemplateParameters({ 
+            id: artist_id
+          })
+          .getResource (err, artist) ->
+            if err
+              msg.send "Hiccup."
+              return
 
-          message = ""
-          if artist
+            message = ""
+            if artist
 
-            if artist.name
-              message += artist.name + "\n"
+              if artist.name
+                message += artist.name + "\n"
 
-            if artist.blurb
-              message += artist.blurb + "\n"
+              if artist.blurb
+                message += artist.blurb + "\n"
 
-            if artist._links.thumbnail
-              message += artist._links.thumbnail.href + "\n"
+              if artist._links.thumbnail
+                message += artist._links.thumbnail.href + "\n"
 
-            if artist._links.permalink
-              message += artist._links.permalink.href
+              if artist._links.permalink
+                message += artist._links.permalink.href
 
-            msg.reply message
-            return
+              msg.reply message
+              return
+
+      #Tried full name, now just try the first name
+      if tried_full
+        api.newRequest()
+            .follow('artist')
+            .withRequestOptions({
+              headers: {
+                'X-Xapp-Token': xappToken,
+                'Accept': 'application/vnd.artsy-v2+json'
+              }
+            })
+            .withTemplateParameters({ 
+              id: artist_fn
+            })
+            .getResource (err, artist) ->
+              if err
+                msg.send "Burp."
+                return
+
+              message = ""
+              if artist
+
+                if artist.name
+                  message += artist.name + "\n"
+
+                if artist.blurb
+                  message += artist.blurb + "\n"
+
+                if artist._links.thumbnail
+                  message += artist._links.thumbnail.href + "\n"
+
+                if artist._links.permalink
+                  message += artist._links.permalink.href
+
+                msg.reply message
+                return
+
+
+
