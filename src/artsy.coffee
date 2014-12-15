@@ -56,7 +56,7 @@ module.exports = (robot) ->
   # 
   robot.respond /art me (.*)/i, (msg) ->
     #find the query
-    if msg.match[2]
+    if msg.match[1]
 
       getToken msg, (xappToken) ->
         #Get a piece of art
@@ -64,7 +64,7 @@ module.exports = (robot) ->
           .header('X-Xapp-Token', xappToken)
           .header('Accept', 'application/vnd.artsy-v2+json')
           .query(
-            q: msg.match[2].trim(),
+            q: msg.match[1].trim(),
             size: 1
           )
           .get() (err, res, body) ->
