@@ -18,7 +18,9 @@
     "url": "https://github.com/robksawyer/hubot-artsy/issues"
   },
   "dependencies": {
-    "coffee-script": "~1.6"
+    "coffee-script": "~1.6",
+    "superagent": "^0.21.0",
+    "traverson": "^0.15.0"
   },
   "devDependencies": {
     "mocha": "*",
