@@ -77,7 +77,7 @@ module.exports = (robot) ->
               if result._embedded 
                   artwork = result._embedded.results[0]
                   if artwork
-                    if artwork.type === "Artwork"
+                    if artwork.type == "Artwork"
 
                       if artwork.title
                         message += artwork.title + "\n"
