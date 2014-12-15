@@ -9,7 +9,9 @@
 #
 # Commands:
 #   hubot get art - Returns a random image from artsy.net.
+#   hubot get artist - Returns a random artist.
 #   artists <some artist> - Returns the details about an artist including an image.
+#   
 # Notes:
 #   You need to sign up and get a client id and secret.
 #
