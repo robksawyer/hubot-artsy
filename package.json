@@ -1,7 +1,7 @@
 {
   "name": "hubot-artsy",
   "description": "Robots like art.",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "author": "robksawyer <robksawyer@gmail.com>",
   "license": "MIT",
   "keywords": [
