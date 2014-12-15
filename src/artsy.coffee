@@ -79,7 +79,7 @@ module.exports = (robot) ->
 
                   #Search the results for Artwork
                   for i in [0..result._embedded.results.length] by 1
-                    if result._embedded.results[i] == "Artwork"
+                    if result._embedded.results[i].type == "Artwork"
                       artwork = result._embedded.results[i]
                       break
 
