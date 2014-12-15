@@ -53,7 +53,7 @@ module.exports = (robot) ->
   #
   # Return a piece of artwork based on a query
   # 
-  robot.respond /art ( me)? (.*)$/i, (msg) ->
+  robot.respond /art( me)? (.*)/i, (msg) ->
     #find the query
     if msg.match[2]
 
